@@ -247,6 +247,24 @@ function viewRole(){
 function viewEmployee(){
     connection.query("SELECT * FROM employee LEFT JOIN role ON employee.id = role.id", function(err, res) {
         if (err) throw err;
+
+        // trying to be able to search by user
+
+        // inquirer
+        // prompt ([
+        //   {
+        //     name:"employee_id",
+        //     type:"input",
+        //     message: "what is the employee's ID number"
+        //   }
+        // ])
+        // .then(function(answer){
+        //   [
+        //     {
+        //       id: answer.employee_id
+        //     }
+        //   ]
+        // })
         console.table(res);
         startPrompt();
       })
