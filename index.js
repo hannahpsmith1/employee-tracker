@@ -162,8 +162,16 @@ function addEmployee() {
             },
             {
               name: "emp_role",
-              type: "input",
-              message: "What is the employee role Id?",
+              type:"input",
+              // type: "list",
+              // choices: function(){
+              //   var roleArray = [];
+              //   for(var i=0; i <res.length; i++){
+              //     roleArray.push(res[i].title);
+              //   }
+              //   return roleArray;
+              // },
+              message: "What is the employee's role Id?",
             },
             {
               name: "emp_manager",
@@ -243,13 +251,13 @@ function updateEmployee(){
   ])
   .then(function(answer) {
     // when finished prompting, insert a new item into the db with that info
-    connection.query("UPDATE department SET ? WHERE ?",
+    connection.query("UPDATE employee SET ? WHERE ?",
       [
         {
           manager_id: answer.man_id,
       },
       {
-          id: answer.emp_id
+          id: answer.emp_id,
       }
     ],
       function(err,res) {
@@ -263,26 +271,46 @@ function updateEmployee(){
   });
 }
 
+// function updateEmployee() {
+//   console.log("Updating all Rocky Road quantities...\n");
+//   var query = connection.query(
+//     "UPDATE products SET ? WHERE ?",
+//     [
+//       {
+//         quantity: 100
+//       },
+//       {
+//         flavor: "Rocky Road"
+//       }
+//     ],
+//     function(err, res) {
+//       console.log(res.affectedRows + " products updated!\n");
+//       // Call deleteProduct AFTER the UPDATE completes
+//       deleteProduct();
+//     }
+//   );
 
-function updateSongs() {
-  console.log("updating song qualities");
-  var query = connection.query(
-      "UPDATE playlist SET ? WHERE ?",
-      [
-          {
-              genre: "pop"
-          },
-          {
-              title: "No Hope"
-          }
-      ],
-      function(err, res) {
-          console.log(res.affectedRows + "song updateed!");
-          deleteSong();
-      }
-  );
-  console.log(query.sql);
-}
+
+
+// function updateSongs() {
+//   console.log("updating song qualities");
+//   var query = connection.query(
+//       "UPDATE playlist SET ? WHERE ?",
+//       [
+//           {
+//               genre: "pop"
+//           },
+//           {
+//               title: "No Hope"
+//           }
+//       ],
+//       function(err, res) {
+//           console.log(res.affectedRows + "song updateed!");
+//           deleteSong();
+//       }
+//   );
+//   console.log(query.sql);
+// }
     // update to table deaprtment
 
 function updateRole(){
