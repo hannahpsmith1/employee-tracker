@@ -1,31 +1,23 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const Choices = require("inquirer/lib/objects/choices");
+const { restoreDefaultPrompts } = require("inquirer");
 
-// create the connection information for the sql database
 var connection = mysql.createConnection({
   host: "localhost",
-
-  // Your port; if not 3306
   port: 3306,
-
-  // Your username
   user: "root",
-
-  // Your password
   password: "password",
   database: "homework_DB"
 });
 
 connection.connect(function(err) {
     if (err) throw err;
-    searchEmployees();
-    // connection.query("SELECT * FROM homework_DB.department",function(err, res) {
-    //           if (err) throw err;
-    //           console.log(res);
-    //         })
+    startPrompt();
+
   });
 
-  function searchEmployees() {
+  function startPrompt() {
     inquirer
     .prompt({
       name: "action",
@@ -38,8 +30,6 @@ connection.connect(function(err) {
         "View Department",
         "View Role",
         "View Employee",
-        "Update Department",
-        "Update Role",
         "Update Employee"
       ]
     })
@@ -68,14 +58,6 @@ connection.connect(function(err) {
       case "View Employee":
         viewEmployee();
         break;
-
-      case "Update Department":
-        updateDepartment();
-        break;
-    
-      case "Update Role":
-        updateRole();
-        break;
             
       case "Update Employee":
         updateEmployee();
@@ -96,19 +78,18 @@ function addDepartment(){
           ])
           .then(function(answer) {
             // when finished prompting, insert a new item into the db with that info
-            connection.query(
-              "INSERT INTO department SET ?",
+            connection.query("INSERT INTO department SET ?",
               {
-                // might not need answer.saldkfjaldkfj on the other side of :
                 name: answer.add_department,
-                // role_id: answer.emp_lastName,
-                // role_id: answer.emp_role,
               },
-              function(err) {
+              function(err,res) {
                 if (err) throw err;
-                console.log("Your department was created successfully!");
+                console.log(res.affectedRows +"Your department was created successfully!");
+                // console.table(homework_db.department)
+                console.table(res);
                 // re-prompt the user for if they want to add employees
-                addDepartment();
+                
+                startPrompt();
               }
             );
           });
@@ -116,13 +97,56 @@ function addDepartment(){
 // }
 
 
-    // create a entry in table for department 
 
 function addRole(){
+  inquirer
+          .prompt([
+            {
+              name: "add_title",
+              type: "input",
+              message: "title of role would you like to add?"
+            },
+            {
+              name: "add_salary",
+              type: "input",
+              message: "What is the salary for this role?"
+            },
+            {
+              name: "add_departmentid",
+              type: "input",
+              message: "which department ID does this to belong to?"
+              // choices: []
+              // I want this to be a list of the options that are coming from the table
+            }
+
+          ])
+          .then(function(answer) {
+            // when finished prompting, insert a new item into the db with that info
+            connection.query(
+              "INSERT INTO role SET ?",
+              {
+
+                title: answer.add_title,
+                salary: answer.add_salary,
+                department_id: answer.add_departmentid
+                // role_id: answer.emp_lastName,
+                // role_id: answer.emp_role,
+              },
+              function(err, res) {
+                if (err) throw err;
+                console.log("Your role was created successfully!");
+                console.table(res)
+                // re-prompt the user for if they want to add employees
+                startPrompt();
+              }
+            );
+          });
+
     // see above
 };
+
+
 function addEmployee() {
-        // prompt for info about the item being put up for auction
         inquirer
           .prompt([
             {
@@ -140,23 +164,28 @@ function addEmployee() {
               name: "emp_role",
               type: "input",
               message: "What is the employee role Id?",
+            },
+            {
+              name: "emp_manager",
+              type: "input",
+              message: "what is your manager's id",
             }
           ])
           .then(function(answer) {
-            // when finished prompting, insert a new item into the db with that info
             connection.query(
               "INSERT INTO employee SET ?",
               {
                 // might not need answer.saldkfjaldkfj on the other side of :
                 first_name: answer.emp_firName,
-                role_id: answer.emp_lastName,
+                last_name: answer.emp_lastName,
                 role_id: answer.emp_role,
+                manager_id: answer.emp_manager,
               },
-              function(err) {
+              function(err, res) {
                 if (err) throw err;
                 console.log("Your employee was created successfully!");
-                // re-prompt the user for if they want to add employees
-                addEmployee();
+                console.table(res)
+                startPrompt();
               }
             );
           });
@@ -198,13 +227,69 @@ function viewEmployee(){
 };
 
 // apeending to existing tables
-function updateDepartment(){
+function updateEmployee(){
+  inquirer
+  .prompt([
+    {
+      name: "emp_id",
+      type: "input",
+      message: "what is the employee id?"
+    },
+    {
+      name: "man_id",
+      type: "input",
+      message: "what is the new managers ID?"
+    }
+  ])
+  .then(function(answer) {
+    // when finished prompting, insert a new item into the db with that info
+    connection.query("UPDATE department SET ? WHERE ?",
+      [
+        {
+          manager_id: answer.man_id,
+      },
+      {
+          id: answer.emp_id
+      }
+    ],
+      function(err,res) {
+        if (err) throw err;
+        console.log(res.affectedRows +"Your employee was updated successfully!");
+        console.table(res);
+        // re-prompt the user for if they want to add employees
+        startPrompt();
+      }
+    );
+  });
+}
+
+
+function updateSongs() {
+  console.log("updating song qualities");
+  var query = connection.query(
+      "UPDATE playlist SET ? WHERE ?",
+      [
+          {
+              genre: "pop"
+          },
+          {
+              title: "No Hope"
+          }
+      ],
+      function(err, res) {
+          console.log(res.affectedRows + "song updateed!");
+          deleteSong();
+      }
+  );
+  console.log(query.sql);
+}
     // update to table deaprtment
-};
+
 function updateRole(){
     // see above but for table role
 };
 function updateEmployee(){
+
     // see above but for table employee
 };
 
