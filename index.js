@@ -21,7 +21,7 @@ connection.connect(function(err) {
     inquirer
     .prompt({
       name: "action",
-      type: "rawlist",
+      type: "list",
       message: "What would you like to do?",
       choices: [
         "Add Department",
@@ -30,7 +30,8 @@ connection.connect(function(err) {
         "View Department",
         "View Role",
         "View Employee",
-        "Update Employee"
+        "Update Employee",
+        "End"
       ]
     })
     .then(function(answer) {
@@ -62,8 +63,16 @@ connection.connect(function(err) {
       case "Update Employee":
         updateEmployee();
         break;
+
+      case "End":
+          endPrompt();
+          break;
       }
     });
+}
+
+function endPrompt() {
+  connection.end();
 }
 
 // department has no dependency, but role needs a department
@@ -207,11 +216,20 @@ function viewDepartment(){
     connection.query("SELECT * FROM homework_DB.department",function(err, res) {
         if (err) throw err;
         console.table(res);
+        startPrompt();
       })
 };
 
 // need left join look at 05
 function viewRole(){
+  connection.query("SELECT * FROM department LEFT JOIN role ON department.id = role.id", 
+  // "SELECT department.id, department.name FROM department INNER JOIN role on role.id = department.id", 
+  function(err, res){
+    if (err) throw err;
+    console.table(res);
+    startPrompt();
+  })
+
 //     -- LEFT JOIN returns all of the values from the left table, and the matching ones from the right table
 // SELECT title, firstName, lastName
 // FROM books
@@ -227,49 +245,76 @@ function viewRole(){
 // FROM books
 // INNER JOIN authors ON books.authorId = authors.id;
 function viewEmployee(){
-    connection.query("SELECT manager_id FROM homework_DB.employee, homework_DB.role",function(err, res) {
+    connection.query("SELECT * FROM employee LEFT JOIN role ON employee.id = role.id", function(err, res) {
         if (err) throw err;
         console.table(res);
+        startPrompt();
       })
 
 };
 
 // apeending to existing tables
 function updateEmployee(){
-  inquirer
-  .prompt([
-    {
-      name: "emp_id",
-      type: "input",
-      message: "what is the employee id?"
-    },
-    {
-      name: "man_id",
-      type: "input",
-      message: "what is the new managers ID?"
-    }
-  ])
-  .then(function(answer) {
-    // when finished prompting, insert a new item into the db with that info
-    connection.query("UPDATE employee SET ? WHERE ?",
-      [
-        {
-          manager_id: answer.man_id,
-      },
-      {
-          id: answer.emp_id,
-      }
-    ],
-      function(err,res) {
-        if (err) throw err;
-        console.log(res.affectedRows +"Your employee was updated successfully!");
-        console.table(res);
-        // re-prompt the user for if they want to add employees
-        startPrompt();
-      }
-    );
-  });
-}
+
+};
+  
+//   inquirer
+//   .prompt([
+//     {
+//       name: "emp_id",
+//       type: "input",
+//       message: "what is the employee id?"
+//     },
+//     {
+//       name: "man_id",
+//       type: "input",
+//       message: "what is the new managers ID?"
+//     }
+//   ])
+//   .then(function(answer) {
+//     // when finished prompting, insert a new item into the db with that info
+//     connection.query("UPDATE employee SET ? WHERE ?",
+//       [
+//         {
+//           manager_id: answer.man_id,
+//       },
+//       {
+//           id: answer.emp_id,
+//       }
+//     ]
+//     inquirer
+//     .prompt([
+//       {
+//         name: "emp_id",
+//         type: "input",
+//         message: "what is the employee id?"
+//       },
+//       {
+//         name: "man_id",
+//         type: "input",
+//         message: "what is the new managers ID?"
+//       }
+//     ])
+//     .then(function(answer){
+//       function(err,res) {
+//         if (err) throw err;
+//         console.log(res.affectedRows +"Your employee was updated successfully!");
+//         console.table(res);
+//         // re-prompt the user for if they want to add employees
+//         startPrompt();
+
+//     })
+
+//       function(err,res) {
+//         if (err) throw err;
+//         console.log(res.affectedRows +"Your employee was updated successfully!");
+//         console.table(res);
+//         // re-prompt the user for if they want to add employees
+//         startPrompt();
+//       }
+//     );
+//   });
+// }
 
 // function updateEmployee() {
 //   console.log("Updating all Rocky Road quantities...\n");
