@@ -1,6 +1,6 @@
 # Employee Tracker
 
-Homework to create a Content Management System for employees of a random company using node, mySQL, express, and inquirer
+
 
 ## Project Description 
 Homework to create a Content Management System for employees of a random company using node, mySQL, express, and inquirer
@@ -10,7 +10,11 @@ Homework to create a Content Management System for employees of a random company
 [Github Repository](https://wwww.github.com/hannahpsmith1/employee-tracker)
 
 
-<img src="https://user-images.githubusercontent.com/59800839/84458382-bd669d00-ac19-11ea-9206-bd201dc0e6af.png" width= "auto" height="300">
+
+## Demo Gif  
+
+
+![Working App](https://user-images.githubusercontent.com/59800839/88254349-e8f19400-cc69-11ea-8003-41bf7bd233d0.gif)
 
 ## Table of Contents
 *[Installation](##Installation)  
@@ -18,8 +22,8 @@ Homework to create a Content Management System for employees of a random company
 *[License](##License)  
 *[Contributing](##Contributing)  
 *[Tests](##Tests)    
-*[Technologies](##Technologies) 
-*[Author](##Author)  
+*[Technologies](##Technologies)   
+*[Author](##Author)    
 *[Acknowledgements](##Acknowledgements)  
 
 ## Installation 
@@ -64,7 +68,6 @@ Follow prompts
 
 [console.table](https://www.npmjs.com/package/console.table)
 
----
 
 
 ## Author
@@ -74,7 +77,6 @@ Follow prompts
 *[Github](https://github.com/hannahpsmith1/employee-tracker)
 *[LinkedIn](https://www.linkedin.com/in/hannah-patience-smith/)
 
----
 
 ## Acknowledgements:
 

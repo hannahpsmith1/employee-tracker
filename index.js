@@ -1,7 +1,9 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-const Choices = require("inquirer/lib/objects/choices");
-const { restoreDefaultPrompts } = require("inquirer");
+// var cTable = require("console.table");
+
+// const Choices = require("inquirer/lib/objects/choices");
+// const { restoreDefaultPrompts } = require("inquirer");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -31,6 +33,7 @@ connection.connect(function(err) {
         "View Role",
         "View Employee",
         "Update Employee",
+        // "Delete Employee",
         "End"
       ]
     })
@@ -63,6 +66,10 @@ connection.connect(function(err) {
       case "Update Employee":
         updateEmployee();
         break;
+
+      // case "Delete Employee":
+      //     deleteEmployee();
+      //     break;
 
       case "End":
           endPrompt();
@@ -245,7 +252,7 @@ function viewRole(){
 // FROM books
 // INNER JOIN authors ON books.authorId = authors.id;
 function viewEmployee(){
-    connection.query("SELECT * FROM employee LEFT JOIN role ON employee.id = role.id", function(err, res) {
+    connection.query("SELECT employee.first_name, employee.last_name, employee.manager_id, role.title, role.department_id FROM employee LEFT JOIN role ON employee.id = role.id", function(err, res) {
         if (err) throw err;
 
         // trying to be able to search by user
@@ -271,131 +278,39 @@ function viewEmployee(){
 
 };
 
-// apeending to existing tables
-function updateEmployee(){
 
-};
+function updateEmployee() {
+  var employee_search = `SELECT * FROM employee;`;
+  connection.query(employee_search, function(err, res) {
+    if (err) throw err;
+    
+    var employee_names = res.map(employee=> { 
+      return (employee.first_name + " " + employee.last_name) ; });
+    
+    var updateQ = [
+      {
+          name: "name",
+          type: "list",
+          message: "Which employee?",
+          choices: employee_names
+      }];
+  inquirer
+  .prompt(updateQ).then(answers => {
+        var role_query = `SELECT * FROM role;`;
+        var emp_index = employee_names.indexOf(answers.name);
+        var emp_id = res[emp_index].id;
+
+         connection.query(role_query, function(err, res) {
+             if (err) throw err;
+             var roles = res.map(role=>{ 
+               return role.title; });
+                   console.table(roles);
+                   startPrompt();
+                  });
+
+               });
+            });
+       };
+
   
-//   inquirer
-//   .prompt([
-//     {
-//       name: "emp_id",
-//       type: "input",
-//       message: "what is the employee id?"
-//     },
-//     {
-//       name: "man_id",
-//       type: "input",
-//       message: "what is the new managers ID?"
-//     }
-//   ])
-//   .then(function(answer) {
-//     // when finished prompting, insert a new item into the db with that info
-//     connection.query("UPDATE employee SET ? WHERE ?",
-//       [
-//         {
-//           manager_id: answer.man_id,
-//       },
-//       {
-//           id: answer.emp_id,
-//       }
-//     ]
-//     inquirer
-//     .prompt([
-//       {
-//         name: "emp_id",
-//         type: "input",
-//         message: "what is the employee id?"
-//       },
-//       {
-//         name: "man_id",
-//         type: "input",
-//         message: "what is the new managers ID?"
-//       }
-//     ])
-//     .then(function(answer){
-//       function(err,res) {
-//         if (err) throw err;
-//         console.log(res.affectedRows +"Your employee was updated successfully!");
-//         console.table(res);
-//         // re-prompt the user for if they want to add employees
-//         startPrompt();
 
-//     })
-
-//       function(err,res) {
-//         if (err) throw err;
-//         console.log(res.affectedRows +"Your employee was updated successfully!");
-//         console.table(res);
-//         // re-prompt the user for if they want to add employees
-//         startPrompt();
-//       }
-//     );
-//   });
-// }
-
-// function updateEmployee() {
-//   console.log("Updating all Rocky Road quantities...\n");
-//   var query = connection.query(
-//     "UPDATE products SET ? WHERE ?",
-//     [
-//       {
-//         quantity: 100
-//       },
-//       {
-//         flavor: "Rocky Road"
-//       }
-//     ],
-//     function(err, res) {
-//       console.log(res.affectedRows + " products updated!\n");
-//       // Call deleteProduct AFTER the UPDATE completes
-//       deleteProduct();
-//     }
-//   );
-
-
-
-// function updateSongs() {
-//   console.log("updating song qualities");
-//   var query = connection.query(
-//       "UPDATE playlist SET ? WHERE ?",
-//       [
-//           {
-//               genre: "pop"
-//           },
-//           {
-//               title: "No Hope"
-//           }
-//       ],
-//       function(err, res) {
-//           console.log(res.affectedRows + "song updateed!");
-//           deleteSong();
-//       }
-//   );
-//   console.log(query.sql);
-// }
-    // update to table deaprtment
-
-function updateRole(){
-    // see above but for table role
-};
-function updateEmployee(){
-
-    // see above but for table employee
-};
-
-// fuction updateDepartment(){};
-// fuction updateRole(){};
-// fuction updateDepartment(){};
-
-
-// function showSameYearArtists() {
-//   connection.query(`SELECT topAlbums.year AS year, topAlbums.artist AS artist, song, album
-//   FROM topAlbums
-//   INNER JOIN top5000 ON topAlbums.artist = top5000.artist AND topAlbums.year = top5000.year
-//   ORDER BY year ASC;`, function(err, res) {
-//       if (err) throw err;
-//       console.table(res);
-//       promptUser();
-//   });
-// }

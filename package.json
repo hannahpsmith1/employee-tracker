@@ -4,6 +4,7 @@
   "description": "activity for demonstrating inquirer with mysql for homework",
   "main": "index.js",
   "dependencies": {
+    "console.table": "^0.10.0",
     "inquirer": "^1.2.2",
     "mysql": "^2.11.1"
   },
